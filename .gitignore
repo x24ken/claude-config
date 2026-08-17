@@ -1,0 +1,18 @@
+# ホワイトリスト方式: 明示したファイルだけ追跡する
+# ~/.claude はランタイムファイル（セッション、キャッシュ、ログ等）が大量に
+# 生成されるディレクトリなので、除外リストではなく追跡リストで管理する。
+# 新しいランタイムファイルが増えても誤コミットが構造的に起きない。
+*
+
+!/.gitignore
+!/README.md
+!/settings.json
+!/CLAUDE.md
+!/keybindings.json
+!/statusline.py
+!/hooks/
+!/hooks/**
+!/skills/
+!/skills/**
+!/git-hooks/
+!/git-hooks/**

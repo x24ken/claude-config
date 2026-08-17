@@ -1,0 +1,49 @@
+#!/bin/bash
+# pre-commit: 公開リポジトリへの秘密情報・autoMode混入を防ぐ
+
+STAGED_FILES=$(git diff --cached --name-only --diff-filter=d)
+[ -z "$STAGED_FILES" ] && exit 0
+
+FAIL=0
+
+# 1) settings.json に autoMode キーがあればブロック
+#    (Auto mode が作業文脈を自動追記する欄。公開リポジトリに載せない)
+if echo "$STAGED_FILES" | grep -qx "settings.json"; then
+    if git show :settings.json | python3 -c "import json,sys; sys.exit(0 if 'autoMode' in json.load(sys.stdin) else 1)" 2>/dev/null; then
+        echo "✗ settings.json に autoMode キーが含まれています（自動追記された作業文脈）。"
+        echo "  除去してから再コミットしてください（コマンドは README.md 参照）。"
+        FAIL=1
+    fi
+fi
+
+# 2) 秘密情報パターンのスキャン（ステージされた追加行のみ）
+PATTERNS=(
+    "AWS Access Key:AKIA[0-9A-Z]{16}"
+    "GitHub Token:gh[pos]_[0-9a-zA-Z]{36}"
+    "GitHub Fine-grained PAT:github_pat_[0-9a-zA-Z_]{22,}"
+    "API Key:sk-[0-9a-zA-Z]{20,}"
+    "Private Key:BEGIN .* PRIVATE KEY"
+    "Password in config:password[[:space:]]*[=:][[:space:]]*[\"'][^\"']+[\"']"
+    "Token in config:token[[:space:]]*[=:][[:space:]]*[\"'][^\"']+[\"']"
+    "Secret in config:secret[[:space:]]*[=:][[:space:]]*[\"'][^\"']+[\"']"
+    "Email address:[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}"
+)
+ALLOWED="example\.(com|org|net)|noreply@|anthropic\.com|schemastore\.org"
+
+for entry in "${PATTERNS[@]}"; do
+    label="${entry%%:*}"
+    pattern="${entry#*:}"
+    hits=$(git diff --cached -U0 -- . ":(exclude)git-hooks/pre-commit" | grep -E "^\+" | grep -Ev "^\+\+\+" | grep -E "$pattern" | grep -Ev "$ALLOWED")
+    if [ -n "$hits" ]; then
+        echo "✗ 秘密情報の可能性: $label"
+        echo "$hits" | head -3
+        FAIL=1
+    fi
+done
+
+if [ "$FAIL" = "1" ]; then
+    echo ""
+    echo "コミットをブロックしました。誤検知なら git-hooks/pre-commit の ALLOWED に追加してください。"
+    exit 1
+fi
+exit 0

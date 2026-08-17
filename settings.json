@@ -1,0 +1,58 @@
+{
+  "permissions": {
+    "deny": [
+      "Bash(sudo rm -rf /*)",
+      "Bash(sudo rm -rf /etc*)",
+      "Bash(sudo rm -rf /var*)",
+      "Bash(sudo rm -rf /usr*)",
+      "Bash(sudo rm -rf /bin*)",
+      "Bash(sudo rm -rf /sbin*)",
+      "Bash(mkfs*)",
+      "Bash(dd if=/dev/zero*)",
+      "Bash(dd if=/dev/random*)",
+      "Bash(chmod -R 777 /*)",
+      "Bash(chown -R * /*)"
+    ],
+    "defaultMode": "auto"
+  },
+  "model": "claude-fable-5[1m]",
+  "enableAllProjectMcpServers": false,
+  "hooks": {
+    "UserPromptSubmit": [
+      {
+        "matcher": "*",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/fable-field-guide/trigger-sentinel.sh",
+            "timeout": 3
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "$HOME/.claude/hooks/fable-field-guide/merge-gate.sh",
+            "timeout": 3
+          }
+        ]
+      }
+    ]
+  },
+  "statusLine": {
+    "type": "command",
+    "command": "~/.claude/statusline.py"
+  },
+  "enabledPlugins": {
+    "todoist@doist": false,
+    "freee-mcp@freee-mcp-marketplace": false
+  },
+  "awaySummaryEnabled": false,
+  "autoUpdatesChannel": "latest",
+  "tui": "fullscreen",
+  "skipAutoPermissionPrompt": true
+}
