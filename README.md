@@ -8,7 +8,6 @@ Claude Code のユーザーレベル設定（`~/.claude`）。
 |---|---|
 | `settings.json` | 権限（denyリスト、Auto mode）、hooks登録、statusline登録、プラグインのオフスイッチ |
 | `CLAUDE.md` | グローバル指示 |
-| `keybindings.json` | キーバインド（Ctrl+Q でトランスクリプト切替） |
 | `statusline.py` | ステータスライン |
 | `hooks/` | field-guide 用フック（trigger-sentinel / merge-gate） |
 | `skills/` | 汎用スキル（field-guide ファミリー） |
