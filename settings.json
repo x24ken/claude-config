@@ -15,7 +15,7 @@
     ],
     "defaultMode": "auto"
   },
-  "model": "claude-fable-5[1m]",
+  "model": "fable[1m]",
   "enableAllProjectMcpServers": false,
   "hooks": {
     "UserPromptSubmit": [
@@ -54,5 +54,8 @@
   "awaySummaryEnabled": false,
   "autoUpdatesChannel": "latest",
   "tui": "fullscreen",
-  "skipAutoPermissionPrompt": true
+  "theme": "custom:quiet-lab",
+  "skipAutoPermissionPrompt": true,
+  "autoCompactEnabled": false,
+  "remoteControlAtStartup": false
 }
