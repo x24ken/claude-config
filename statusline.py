@@ -92,8 +92,12 @@ week = data.get('rate_limits', {}).get('seven_day', {}).get('used_percentage')
 if week is not None:
     sections.append(fmt('7d', week))
 
-proj_dir = compact_path(data.get('workspace', {}).get('project_dir'))
-if proj_dir:
-    sections.append(f'{CYAN}{proj_dir}{R}')
+model = data.get('model', {}).get('display_name')
+if model:
+    sections.append(f'{CYAN}{model}{R}')
+
+effort = data.get('effort', {}).get('level')
+if effort:
+    sections.append(f'{DIM}effort{R} {BOLD}{effort}{R}')
 
 print(f' {DIM}│{R} '.join(sections), end='')
